@@ -32,7 +32,7 @@ optimiser = tf.train.GradientDescentOptimizer(alpha)
 train = optimiser.minimize(loss)
 
 # run the training algorithm for N=1000 iterations
-num_of_iterations = 10000
+num_of_iterations = 1000
 # reset the values of the linear model to be equal to their initial values
 session.run(init)
 
