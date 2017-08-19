@@ -27,7 +27,7 @@ y = tf.placeholder(tf.float32, [None, 10])
 cross_entropy_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=tf.matmul(x, W) + b, labels=y))
 
 # define the training graph of the model to use gradient descent
-alpha = 0.01
+alpha = 0.5
 train_step = tf.train.GradientDescentOptimizer(alpha).minimize(cross_entropy_loss)
 
 # run the gradient descent algorithm for a pre-specified number of iterations
