@@ -122,8 +122,3 @@ with tf.Session() as session:
     final_accuracy = session.run(accuracy, {x: mnist_data.test.images, y: mnist_data.test.labels, keep_probability: 1.0})
     print("Final test accuracy: %s" % final_accuracy)
 
-
-
-
-
-
