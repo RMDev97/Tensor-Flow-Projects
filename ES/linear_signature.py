@@ -44,7 +44,7 @@ class ESLinearClassifier:
         self.input_signatures = [list(sig.sig(np.array(stream), self.order)) for stream in self.lead_lag_input]
 
         # train a basic softmax classifier model on this new feature set
-        num_features = (2 ** self.order) - 1
+        num_features = (2 ** (self.order + 1)) - 1
         x = tf.placeholder(tf.float32, [None, num_features])
         W = tf.Variable(tf.zeroes([num_features, self.num_labels]))
         b = tf.Variable(tf.zeroes([self.num_labels]))
@@ -66,7 +66,7 @@ class ESLinearClassifier:
         # compute the signature of the input path (assumed to be a 1 dimensional path)
         lead_lag_path = zip(PathTransforms.lead(input_path), PathTransforms.lag(input_path))
         signature = sig.sig(lead_lag_path, self.order)
-        num_features = (2 ** self.order) - 1
+        num_features = (2 ** (self.order + 1)) - 1
         x = tf.placeholder(tf.float32, [None, num_features])
 
         # use the model to predict a value for the label
