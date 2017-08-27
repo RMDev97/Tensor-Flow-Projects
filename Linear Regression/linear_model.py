@@ -57,6 +57,6 @@ y_eval = [-1.01, -4.1, -7, 0.]
 
 # run the loss function on this new set of data
 loss_val = session.run(loss, {x: x_eval, y: y_eval})
-print("Value of loss function when out of sample data is provided: %s", loss_val)
+print("Value of loss function when out of sample data is provided:", loss_val)
 
 
