@@ -32,6 +32,11 @@ class ESLinearClassifier:
         self.order = order
         self.num_labels = num_labels
         self.model = None
+        self.num_features = (2 ** (self.order + 1)) - 1
+        self.x = tf.placeholder(tf.float32, [None, self.num_features])
+        self.W = tf.Variable(tf.zeroes([self.num_features, self.num_labels]))
+        self.b = tf.Variable(tf.zeroes([self.num_labels]))
+        self.y = tf.placeholder(tf.float32, [self.num_labels])
 
     def train(self):
         # compute the lead-lag transform of the input path to account for 2-variation of the path
@@ -44,15 +49,10 @@ class ESLinearClassifier:
         self.input_signatures = [list(sig.sig(np.array(stream), self.order)) for stream in self.lead_lag_input]
 
         # train a basic softmax classifier model on this new feature set
-        num_features = (2 ** (self.order + 1)) - 1
-        x = tf.placeholder(tf.float32, [None, num_features])
-        W = tf.Variable(tf.zeroes([num_features, self.num_labels]))
-        b = tf.Variable(tf.zeroes([self.num_labels]))
-        y = tf.placeholder(tf.float32, [self.num_labels])
 
-        self.model = tf.nn.softmax(tf.matmul(x, W) + b)
+        self.model = tf.nn.softmax(tf.matmul(self.x, self.W) + self.b)
         cross_entropy_loss = tf.reduce_mean(
-            tf.nn.softmax_cross_entropy_with_logits(logits=tf.matmul(x, W) + b, labels=y))
+            tf.nn.softmax_cross_entropy_with_logits(logits=tf.matmul(self.x, self.W) + self.b, labels=self.y))
 
         # perform the learning step with ADAM as the optimiser
         optimiser = tf.train.AdamOptimizer(learning_rate=self.alpha).minimize(cross_entropy_loss)
@@ -60,19 +60,16 @@ class ESLinearClassifier:
         num_iterations = 1000
         with tf.Session as session:
             for i in range(num_iterations):
-                session.run(optimiser, {x: self.input_signatures, y: self.labels})
+                session.run(optimiser, {self.x: self.input_signatures, self.y: self.labels})
 
     def predict(self, input_path):
         # compute the signature of the input path (assumed to be a 1 dimensional path)
         lead_lag_path = zip(PathTransforms.lead(input_path), PathTransforms.lag(input_path))
         signature = sig.sig(lead_lag_path, self.order)
-        num_features = (2 ** (self.order + 1)) - 1
-        x = tf.placeholder(tf.float32, [None, num_features])
 
         # use the model to predict a value for the label
-        prediction = None
         with tf.Session as session:
-            prediction = session.run(self.model, feed_dict={x: signature})
+            prediction = session.run(self.model, feed_dict={self.x: signature})
         return prediction
 
 
