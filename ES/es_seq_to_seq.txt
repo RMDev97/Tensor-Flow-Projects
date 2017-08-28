@@ -1,0 +1,39 @@
+The purpose of this model is to utilise the power of signatures in order to perform translations between sequences of text
+In theory, we can map words to a vector space by an embedding procedure which essentially provides a homomorphism from
+the words of an alphabet into a vector space where the notion of distance is equivalent in some respect to the semantics
+of the words.
+
+Our model will essentially solve this as a regression problem of the form p(Y) = f(p(X)) + eps
+(where we assume eps is gaussian distributed with mean 0 and variance 1)
+
+where Y and X will be modelled as paths through this vector space, thus p(X) and p(Y) are their respective signatures.
+our goal is then to infer the function f which relates the two quantities.
+
+The approach to follow is therefore:
+1. given input sentences S(X) and S(Y)
+    1.1. we embed the words contained in sentences into a banach space as defined above
+    1.2. construct paths X and Y from the sentences and compute their led-lag transforms in order to make them
+    continuous
+    1.3 compute their signatures p(X) and p(Y)
+2. train a linear regression model (initially a basic shallow model but will also consider a deep model or a CNN) L(p(X))
+3. apply the inverse signature to retrieve the original path
+4. apply the reverse mapping of the embedding to retrieve
+
+Problems with model:
+1. A sentence when modelled as a path is not simple in the sense it will likely contain self-intersections and so the
+ we cannot guarantee uniqueness of the path given its signature
+
+ possible Workarounds:
+ 1. we could consider alternative measures of the path such as persistent homologies as studied in TDA which can characterise
+ paths of more arbitrary structure (and are also agnostic to the representation of the data) - this will warrant substantial
+ investigation into the applications of topology to path based regression
+
+ 2. We could still pursue the signature approach but rather cut paths at their self intersections and perform regression on
+ them independently, then stitch the resulting sentences together (though it would need to be proven that we do not lose any
+ contextual information in doing this)
+
+2. Computation of the inverse signature may not be feasible in all cases as signatures are invariant under translations
+ of the path (thus is a reconstruction of the path in the new language may lead to more than one possible mapping)
+
+The model we will provide will be simplistic and not address the problems mentioned above, instead subsequent models will
+attempt to explore these issues
